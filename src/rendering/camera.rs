@@ -33,9 +33,9 @@ impl Camera {
         }
     }
 
-    pub fn get_ray_to_pixel(&self, pix_x: u32, pix_y: u32) -> Ray {
-        let ndc_x = (pix_x as f32 + 0.5) / (self.width as f32);
-        let ndc_y = (pix_y as f32 + 0.5) / (self.height as f32);
+    pub fn get_ray_to_pixel(&self, pix_x: u32, pix_y: u32, offset_x: f32, offset_y: f32) -> Ray {
+        let ndc_x = (pix_x as f32 + 0.5 + offset_x) / (self.width as f32);
+        let ndc_y = (pix_y as f32 + 0.5 + offset_y) / (self.height as f32);
 
         let cam_x = (2.0 * ndc_x - 1.0) * self.aspect_ratio * self.fov_scale;
         let cam_y = (1.0 - 2.0 * ndc_y) * self.fov_scale;

@@ -17,7 +17,7 @@ pub struct Sphere<T: Material> {
 
 impl<T: Material> Object for Sphere<T> {
     fn intersect(&self, r: &mut Ray) -> bool {
-        let diff = &r.origin - &self.origin;
+        let diff = r.origin - &self.origin;
         let a = Vec3::dot(&r.dir, &r.dir);
         let b_half = Vec3::dot(&r.dir, &diff);
         let c = Vec3::dot(&diff,&diff) - self.radius * self.radius;
@@ -51,18 +51,6 @@ impl<T: Material> Object for Sphere<T> {
         self.mat.compute_shading(r, &normal)
     }
 }
-/*
-        rec.pos = r.origin + r.dir * root;
-        rec.normal = ((rec.pos - self.origin) / self.radius).unit();
-        rec.front = Vec3::dot(&rec.normal, &r.dir) < 0.0;
-        
-        if rec.front {
-            rec.normal = rec.normal * -1.0;
-        }
-        rec.mat = self.mat;
-        
-    }
-}
 
 pub struct Triangle<T: Material> {
     pub v0: Vec3,
@@ -71,15 +59,15 @@ pub struct Triangle<T: Material> {
     pub mat: T
 }
 
-impl<T: Material> Object<T> for Triangle<T> {
-    fn intersect(&self, r: &mut Ray, rec: &mut Hit<T>) {
+impl<T: Material> Object for Triangle<T> {
+    fn intersect(&self, r: &mut Ray) -> bool {
         let v01 = &self.v1 - &self.v0;
-        let v02 = &self.v2 - &self.v0;
+        let v02 = &self.v2 - &self. v0;
         let pvec = Vec3::cross(&r.dir, &v02);
         
         let det = Vec3::dot(&v01, &pvec);
         if det.abs() < 0.0001 {
-            return 
+            return false 
         }
 
         let inv_det = 1.0 / det;
@@ -87,17 +75,21 @@ impl<T: Material> Object<T> for Triangle<T> {
         
         let u = Vec3::dot(&tvec, &pvec) * inv_det;
         if u < 0.0 || u > 1.0 {
-            return
+            return false
         }
 
         let qvec = Vec3::cross(&tvec, &v01);
         let v = Vec3::dot(&r.dir, &qvec) * inv_det; 
         if v < 0.0 || u + v > 1.0 {
-            return 
+            return false
         }
 
         r.max = Vec3::dot(&v02, &qvec) * inv_det;
-        rec.mat = self.mat;
+        true
+    }
+    
+    fn scatter(&self, r: &mut Ray, l: &Vec3) -> Vec3 {
+        &r.origin - l
     }
 }
-*/
+
