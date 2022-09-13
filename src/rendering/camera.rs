@@ -1,5 +1,4 @@
-use crate::rendering::ray::Ray;
-use crate::rendering::math::vec3::Vec3;
+use crate::rendering::math::{Ray, Vec3};
 
 pub struct Camera {
     origin: Vec3,
@@ -9,12 +8,14 @@ pub struct Camera {
     width: u32,
     height: u32,
     aspect_ratio: f32,
-    fov_scale: f32
+    fov_scale: f32,
+    focus_dist: f32,
+    aperture: f32,
 }
 
 impl Camera {
-    pub fn new(origin: Vec3, lookat: Vec3, width: u32, height: u32, fov: f32) -> Self {
-        let forward = (&lookat - &origin).unit();
+    pub fn new(origin: Vec3, lookat: Vec3, width: u32, height: u32, fov: f32, focus_dist: f32, aperture: f32) -> Self {
+        let forward = (lookat - origin).unit();
         let right = Vec3::cross(&forward, &Vec3::new(0.0, 1.0, 0.0)).unit();
         let up = Vec3::cross(&right, &forward).unit();
 
@@ -29,7 +30,9 @@ impl Camera {
             width,
             height,
             aspect_ratio,
-            fov_scale
+            fov_scale,
+            focus_dist,
+            aperture,
         }
     }
 
@@ -40,15 +43,16 @@ impl Camera {
         let cam_x = (2.0 * ndc_x - 1.0) * self.aspect_ratio * self.fov_scale;
         let cam_y = (1.0 - 2.0 * ndc_y) * self.fov_scale;
 
-        let dir = (self.forward + self.right * cam_x + self.up * cam_y).unit(); 
+        let rd = Vec3::random_in_unit_disk() * (self.aperture / 2.0);
+        let offset = self.right * rd[0] + self.up * rd[1];
+
+        let dir = ((self.forward + self.right * cam_x + self.up * cam_y) * self.focus_dist - offset).unit(); 
 
         Ray {
-            origin: self.origin,
+            origin: self.origin + offset,
             dir,
-            min: 0.0001,
-            max: std::f32::INFINITY
+            min: 0.001,
+            max: std::f32::INFINITY,
         }
     }
 }
-
-// 

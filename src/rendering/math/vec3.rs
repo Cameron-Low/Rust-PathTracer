@@ -1,4 +1,5 @@
 use std::ops::*;
+use rand::Rng;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vec3 {
@@ -34,6 +35,51 @@ impl Vec3 {
         self / self.len()
     }
 
+    pub fn close_to_zero(v: Vec3) -> bool {
+        let err = 1e-8;
+        v[0].abs() < err && v[1].abs() < err && v[2].abs() < err 
+    }
+
+    pub fn random_vec(min: f32, max: f32) -> Vec3 {
+        let mut rng = rand::thread_rng();
+        vec3!(rng.gen_range(min..max), rng.gen_range(min..max), rng.gen_range(min..max))
+    }
+
+    pub fn random_unit_vec() -> Vec3 {
+       Self::random_in_unit_sphere().unit() 
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = Self::random_vec(-1.0, 1.0);
+            if p.len_sq() >= 1.0 {
+                continue;
+            }
+            return p;
+        }
+    }
+
+    pub fn random_in_hemi(normal: &Vec3) -> Vec3 {
+        let in_unit_sphere = Self::random_in_unit_sphere();
+
+        if Vec3::dot(&in_unit_sphere, normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
+    }
+
+    pub fn random_in_unit_disk() -> Vec3 {
+        let mut rng = rand::thread_rng();
+        loop {
+            let p = vec3!(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0), 0.0);
+            if p.len_sq() >= 1.0 {
+                continue;
+            }
+            return p;
+        }
+    }
+
 }
 
 #[macro_export]
@@ -50,6 +96,12 @@ impl Index<usize> for Vec3 {
 
     fn index(&self, idx: usize) -> &f32 {
         &self.elems[idx]
+    }
+}
+
+impl IndexMut<usize> for Vec3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.elems[index]
     }
 }
 
@@ -180,6 +232,16 @@ impl SubAssign<&Vec3> for Vec3 {
                                self[1] - other[1],
                                self[2] - other[2]] }
         }
+}
+
+impl Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 { elems: [self[0] * other[0],
+                       self[1] * other[1],
+                       self[2] * other[2]] }
+    }
 }
 
 impl Mul<f32> for Vec3 {
