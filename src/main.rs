@@ -1,4 +1,5 @@
 use fltk::{prelude::*, *};
+use rendering::Renderer;
 mod rendering;
 
 fn main() {
@@ -8,6 +9,7 @@ fn main() {
 
     // Set up the frame buffer which we use for rendering
     let mut fb: Vec<u8> = vec![0u8; im_width as usize * im_height as usize * 3];
+    let renderer = Renderer::new(im_width, im_height);
 
     // Set up the application window
     let app = app::App::default();
@@ -29,7 +31,8 @@ fn main() {
 
     // Defining button press behaviour
     but.set_callback(move |_| {
-        rendering::cast_rays(&mut fb, im_width, im_height);
+        let elapsed = renderer.cast_rays(&mut fb);
+        println!("The scene took {}ms to render", elapsed.as_millis());
 
         // Construct an image from the framebuffer and display it
         let img = image::RgbImage::new(&fb, im_width as i32, im_height as i32, enums::ColorDepth::Rgb8).unwrap();

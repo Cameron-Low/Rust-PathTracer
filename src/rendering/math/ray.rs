@@ -3,11 +3,13 @@ use crate::rendering::math::Vec3;
 pub struct Ray {
     pub origin: Vec3,
     pub dir: Vec3,
-    pub min: f32,
-    pub max: f32,
 }
 
 impl Ray {
+    pub fn move_along(&mut self, t: f32) {
+        self.origin += self.dir * t;
+    }
+
     pub fn reflect(&mut self, n: Vec3) {
         self.dir -= n * Vec3::dot(&self.dir, &n) * 2.0;             
     }

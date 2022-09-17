@@ -46,13 +46,11 @@ impl Camera {
         let rd = Vec3::random_in_unit_disk() * (self.aperture / 2.0);
         let offset = self.right * rd[0] + self.up * rd[1];
 
-        let dir = ((self.forward + self.right * cam_x + self.up * cam_y) * self.focus_dist - offset).unit(); 
+        let dir = (self.forward + self.right * cam_x + self.up * cam_y) * self.focus_dist - offset; 
 
         Ray {
             origin: self.origin + offset,
             dir,
-            min: 0.001,
-            max: std::f32::INFINITY,
         }
     }
 }

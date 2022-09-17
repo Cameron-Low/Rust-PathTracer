@@ -265,6 +265,22 @@ impl Mul<f32> for &Vec3 {
     }
 }
 
+impl Mul<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        other * self
+    }
+}
+
+impl Mul<&Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, other: &Vec3) -> Vec3 {
+        other * self
+    }
+}
+
 impl MulAssign<f32> for Vec3 {
     fn mul_assign(&mut self, other: f32) {
         *self = Vec3 { elems: [self[0] * other,
@@ -290,6 +306,22 @@ impl Div<f32> for &Vec3 {
         Vec3 { elems: [self[0] / other,
                        self[1] / other,
                        self[2] / other] }
+    }
+}
+
+impl Div<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn div(self, other: Vec3) -> Vec3 {
+        other / self
+    }
+}
+
+impl Div<&Vec3> for f32 {
+    type Output = Vec3;
+
+    fn div(self, other: &Vec3) -> Vec3 {
+        other / self
     }
 }
 
