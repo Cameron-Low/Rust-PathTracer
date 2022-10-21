@@ -3,11 +3,39 @@ name = "raytracer"
 version = "0.1.0"
 edition = "2021"
 
+[profile.release]
+debug = 1
+lto = true
+codegen-units = 1
+panic = "abort"
+
 [dependencies]
 fltk = "^1.2"
-rand = "0.8.5"
+fastrand = "1.8.0"
 rayon = "1.5.3"
+image = "0.24.3"
+
+[dev-dependencies]
+criterion = "0.3"
 
 [features]
 default = ["multithreading"]
 multithreading = []
+
+[lib]
+name = "rendering"
+path = "src/rendering/mod.rs" 
+bench = false
+
+[[bin]]
+name = "main"
+path = "./src/main.rs"
+bench = false
+
+[[bin]]
+name = "nogui"
+bench = false
+
+[[bench]]
+name = "random_vec_benchmark"
+harness = false
